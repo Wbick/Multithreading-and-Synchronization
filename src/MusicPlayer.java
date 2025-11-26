@@ -13,24 +13,31 @@ public class MusicPlayer{
         public void run(){
             String[] instructions = musicSheet.split(" ");
             for(String note : instructions){
+                //delay star of note
+                try {
+                    sleep(300);
+                } catch (InterruptedException e){}
+                //switch to other thread for those notes
+                if(note.equals("re") ||
+                    note.equals("fa")||
+                    note.equals("la")){
+                        allowPlay = 2;
+                }else if(note.equals("do-octave"))allowPlay = 0;
+
+                //playing sound
                 if(allowPlay == 0 || allowPlay == 1){
                     System.out.println("Thread1: "+note);
                     sound.play("sounds/"+note+".wav");
                 }else{
                     while(allowPlay == 2){
                         try {
-                            Thread.sleep(500);
+                            Thread.sleep(300);
                         } catch (InterruptedException e) {
                         }
+                        continue;
                     }
                 }
-                //switch to other thread for those notes
-                if(note.equals("re") ||
-                    note.equals("fa")||
-                    note.equals("la")){
-                        allowPlay = 2;
-                    continue;
-                }else if(note.equals("do-octave"))allowPlay = 0;
+                
             }
             
         }
@@ -45,25 +52,34 @@ public class MusicPlayer{
         public void run(){
             String[] instructions = musicSheet.split(" ");
             for(String note : instructions){
-                if(allowPlay == 0 || allowPlay == 2){
-                    System.out.println("Thread2: "+note);
-                    sound.play("sounds/"+note+".wav");
-                }else{
-                    while(allowPlay == 1){
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                        }
-                    }
-                }
+
+                //delay the start sound of note
+                try {
+                    sleep(300);
+                } catch (InterruptedException e){}
+
                 //switch to other thread for those notes
                 if(note.equals("do") ||
                     note.equals("mi")||
                     note.equals("sol")||
                     note.equals("si")){
                         allowPlay = 1;
-                    continue;
                 }else if(note.equals("do-octave"))allowPlay = 0;
+
+                //playing sound
+                if(allowPlay == 0 || allowPlay == 2){
+                    System.out.println("Thread2: "+note);
+                    sound.play("sounds/"+note+".wav");
+                }else{
+                    while(allowPlay == 1){
+                        try {
+                            Thread.sleep(300);
+                        } catch (InterruptedException e) {
+                        }
+                    }
+                    continue;
+                }
+                
             }
         }
     }
