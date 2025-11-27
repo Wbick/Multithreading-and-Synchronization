@@ -4,7 +4,7 @@ public class MusicPlayer{
     private static int allowPlay = 1;
     private static String musicSheet;
     private static boolean skipNote = false; 
-    private static boolean play = true;
+    private static boolean play;
     static FilePlayer sound = new FilePlayer();
 
     //do, mi, sol, si, do-octave
@@ -25,6 +25,8 @@ public class MusicPlayer{
                         skipNote=false;
                         allowPlay = 2;
                 }else if(note.equals("do-octave"))allowPlay = 0;
+                //silent note
+                else if(note.equals("|")) allowPlay = -1;
                 else{
                     allowPlay =1;
                     skipNote = true;
@@ -74,6 +76,7 @@ public class MusicPlayer{
                 }
                 
         }
+        return;
         }
     }
 
@@ -84,10 +87,15 @@ public class MusicPlayer{
 
         musicSheet = "do re mi fa sol la si do-octave";
 
-        allowPlay = 1;
-
+        play = true;
         t1.start();
         t2.start();
-
+        
+        while(play);
+     t1.stop();
+     t2.stop();
+        System.out.println("Twinkle Twinkle Little Star");
+        musicSheet = "do do so | so | la la so | fa fa mi mi re re do so | so | fa fa mi mi re so | so | fa fa mi mi re do do so | so| la la so | fa fa mi mi re re do";
+        play = true;
     }
 }
