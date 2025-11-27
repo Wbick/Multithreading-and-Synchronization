@@ -24,9 +24,13 @@ public class MusicPlayer{
                     note.equals("la")){
                         skipNote=false;
                         allowPlay = 2;
-                }else if(note.equals("do-octave"))allowPlay = 0;
+                }else if(note.equals("do-octave"))
+                    allowPlay = 0;
                 //silent note
-                else if(note.equals("|")) allowPlay = -1;
+                else if(note.equals("|")){
+                     allowPlay = -1;
+                    skipNote = true;
+                }
                 else{
                     allowPlay =1;
                     skipNote = true;
@@ -60,9 +64,9 @@ public class MusicPlayer{
             while(play) {
             try {
                 sleep(1);
-                //playinf sound
             } catch (InterruptedException e) {
             }
+                //playing note
                 if(allowPlay == 0 || allowPlay == 2){
                     String note = instructions[++noteNumber];
                     System.out.println("Thread2: "+note);
@@ -91,11 +95,21 @@ public class MusicPlayer{
         t1.start();
         t2.start();
         
-        while(play);
-     t1.stop();
-     t2.stop();
+        while(play){
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+            } 
+        }
+        t1.stop();
+        t2.stop();
+        Thread t3 = new Thread1();
+        Thread t4 = new Thread2();
+     
         System.out.println("Twinkle Twinkle Little Star");
-        musicSheet = "do do so | so | la la so | fa fa mi mi re re do so | so | fa fa mi mi re so | so | fa fa mi mi re do do so | so| la la so | fa fa mi mi re re do";
+        musicSheet = "do do so | so | la la so | fa fa mi mi re re do so | so | fa fa mi mi re so | so | fa fa mi mi re do do so | so | la la so | fa fa mi mi re re do";
         play = true;
+        t3.start();
+        t4.start();
     }
 }
