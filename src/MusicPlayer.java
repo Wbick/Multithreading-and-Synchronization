@@ -16,7 +16,7 @@ public class MusicPlayer{
             for(String note : instructions){
                 //delay start of note
                 try {
-                    sleep(600);
+                    sleep(300);
                 } catch (InterruptedException e){}
                 //switch to other thread for those notes
                 if(note.equals("re") ||
@@ -35,6 +35,9 @@ public class MusicPlayer{
                     sound.play("sounds/"+note+".wav");
                 }
                     
+                try {
+                    sleep(300);
+                } catch (InterruptedException e){}
                 }
                 play = false;
             }
