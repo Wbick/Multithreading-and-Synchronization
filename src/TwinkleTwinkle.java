@@ -1,4 +1,4 @@
-public class MusicPlayer{
+public class TwinkleTwinkle{
     private static int allowPlay = 1;
     private static String musicSheet;
     
@@ -29,10 +29,9 @@ public class MusicPlayer{
                 if(allowPlay == 1){
                     //delay note sound
                     try {
-                        sleep(200);
+                        sleep(500);
                         sound.play("sounds/"+note+".wav");
                         System.out.println("Thread1: "+note);
-                        sleep(500);
                     } catch (Exception e) {}
 
 
@@ -40,10 +39,11 @@ public class MusicPlayer{
                 }else if(allowPlay == 0){
                     synchronized(this){
                         try {
-                            sound.play("sounds/"+note+".wav");
-                            System.out.println("Thread1: "+note);
                             sleep(500);
-                        } catch (InterruptedException e) {} 
+                        } catch (InterruptedException e) {}
+                        sound.play("sounds/"+note+".wav");
+                        System.out.println("Thread1: "+note);
+                        break;
                     }   
                 }
             }
@@ -77,10 +77,9 @@ public class MusicPlayer{
                 if(allowPlay == 2){
                     //delay note sound
                     try {
-                        sleep(200);
+                        sleep(500);
                         sound.play("sounds/"+note+".wav");
                         System.out.println("Thread2: "+note);
-                        sleep(500);
                     } catch (Exception e) {}
 
 
@@ -88,12 +87,11 @@ public class MusicPlayer{
                 }else if(allowPlay == 0){
                     synchronized(this){
                         try {
-                            sleep(700);
-                            sound.play("sounds/"+note+".wav");
-                            System.out.println("Thread2: "+note);
                             sleep(500);
                         } catch (InterruptedException e) {}
-                        
+                        sound.play("sounds/"+note+".wav");
+                        System.out.println("Thread2: "+note);
+                        break;
                     }                    
                 }
             }
@@ -105,10 +103,13 @@ public class MusicPlayer{
         Thread1 t1 = new Thread1();
         Thread2 t2 = new Thread2();
 
-        musicSheet = "do re mi fa sol la si do-octave";
+        musicSheet = "do do sol sol la la sol fa fa mi mi re re do sol sol fa fa mi mi re sol sol fa fa mi mi re do do sol sol la la sol fa fa mi mi re re do";
+        //musicSheet = "do re mi fa sol la si do-octave";
         allowPlay = 1;
 
         t1.start();
         t2.start();
+        
+        
     }
 }
