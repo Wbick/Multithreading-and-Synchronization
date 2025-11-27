@@ -1,7 +1,8 @@
 public class MusicPlayer{
     private static int allowPlay = 1;
     private static String musicSheet;
-    
+    private static boolean skipNote = false; 
+    private static boolean play;
     static FilePlayer sound = new FilePlayer();
 
     //do, mi, sol, si, do-octave
@@ -11,46 +12,43 @@ public class MusicPlayer{
         public void run(){
             String[] instructions = musicSheet.split(" ");
             for(String note : instructions){
+                //delay start of note
+                try {
+                    sleep(300);
+                } catch (InterruptedException e){}
+                //switch to other thread for those notes
                 if(note.equals("re") ||
                     note.equals("fa")||
-                    note.equals("la"))
-                    {
-                    System.out.println("Switching to thread 2");
-                    synchronized(this){
+                    note.equals("la")){
+                        skipNote=false;
                         allowPlay = 2;
-                    }
-                    continue;
-                    
-                }else if(note.equals("do-octave"))allowPlay = 0;
-
-                //delayes unitl threads turn
-                while(allowPlay == 2){System.out.print("");}
-
-                //normal notes case
-                if(allowPlay == 1){
-                    //delay note sound
-                    try {
-                        sleep(500);
-                        sound.play("sounds/"+note+".wav");
-                        System.out.println("Thread1: "+note);
-                    } catch (Exception e) {}
-
-
-                //do-octave case
-                }else if(allowPlay == 0){
-                    synchronized(this){
-                        try {
-                            sleep(500);
-                        } catch (InterruptedException e) {}
-                        sound.play("sounds/"+note+".wav");
-                        System.out.println("Thread1: "+note);
-                        break;
-                    }   
+                }else if(note.equals("do-octave"))
+                    allowPlay = 0;
+                //silent note
+                else if(note.equals("|")){
+                     allowPlay = -1;
+                    skipNote = true;
                 }
+                else{
+                    allowPlay =1;
+                    skipNote = true;
+                }
+                //playing sound
+                if(allowPlay == 0 || allowPlay == 1){
+                    System.out.println("Thread1: "+note);
+                    sound.play("sounds/"+note+".wav");
+                }
+                    
+                try {
+                    sleep(300);
+                } catch (InterruptedException e){}
+                }
+                play = false;
             }
+            
         }
 
-    } 
+          
 
     //re, fa, la, do-octave
     public static class Thread2 extends Thread{
@@ -58,45 +56,28 @@ public class MusicPlayer{
         @Override
         public void run(){
             String[] instructions = musicSheet.split(" ");
-            for(String note : instructions){
-                if(note.equals("do") ||
-                    note.equals("mi")||
-                    note.equals("sol")||
-                    note.equals("si"))
-                    {
-                    System.out.println("Switching to thread 1");
-                    synchronized(this){
-                        allowPlay = 1;
-                    }
-                    continue;
-                    
-                }else if(note.equals("do-octave"))allowPlay = 0;
-
-                //delayes unitl threads turn
-                while(allowPlay == 1){System.out.print("");}
-
-                //normal notes case
-                if(allowPlay == 2){
-                    //delay note sound
-                    try {
-                        sleep(500);
-                        sound.play("sounds/"+note+".wav");
-                        System.out.println("Thread2: "+note);
-                    } catch (Exception e) {}
-
-
-                //do-octave case
-                }else if(allowPlay == 0){
-                    synchronized(this){
-                        try {
-                            sleep(500);
-                        } catch (InterruptedException e) {}
-                        sound.play("sounds/"+note+".wav");
-                        System.out.println("Thread2: "+note);
-                        break;
-                    }                    
-                }
+            int noteNumber =-1;
+            //this thread is contantly looping
+            while(play) {
+            try {
+                sleep(1);
+            } catch (InterruptedException e) {
             }
+                //playing note
+                if(allowPlay == 0 || allowPlay == 2){
+                    String note = instructions[++noteNumber];
+                    System.out.println("Thread2: "+note);
+                    sound.play("sounds/"+note+".wav");
+                    allowPlay = -1;
+            }
+                //Thread 1 plays a note
+                else if(skipNote) {
+                    ++noteNumber;
+                    skipNote = false;
+                }
+                
+        }
+        return;
         }
     }
 
@@ -107,11 +88,26 @@ public class MusicPlayer{
 
         //musicSheet = "do do sol sol la la sol fa fa mi mi re re do sol sol fa fa mi mi re sol sol fa fa mi mi re do do sol sol la la sol fa fa mi mi re re do";
         musicSheet = "do re mi fa sol la si do-octave";
-        allowPlay = 1;
 
+        play = true;
         t1.start();
         t2.start();
         
-        
+        while(play){
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+            } 
+        }
+        t1.stop();
+        t2.stop();
+        Thread t3 = new Thread1();
+        Thread t4 = new Thread2();
+     
+        System.out.println("Twinkle Twinkle Little Star");
+        musicSheet = "do do so | so | la la so | fa fa mi mi re re do so | so | fa fa mi mi re so | so | fa fa mi mi re do do so | so | la la so | fa fa mi mi re re do";
+        play = true;
+        t3.start();
+        t4.start();
     }
 }
